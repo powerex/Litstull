@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.userway.assignment.litstull.model.OriginLinkResponseDto;
 import org.userway.assignment.litstull.model.ShortLinkResponseDto;
-import org.userway.assignment.litstull.service.ShortererService;
+import org.userway.assignment.litstull.service.ShortenerService;
 import org.userway.assignment.litstull.service.exceptions.BadRequestLink;
 import org.userway.assignment.litstull.service.exceptions.NotFoundOriginException;
 import org.userway.assignment.litstull.service.exceptions.NotFoundShortException;
@@ -23,9 +23,9 @@ import org.userway.assignment.litstull.service.exceptions.NotFoundShortException
 @RequestMapping("listfull/v1")
 public class ShortererController {
 
-    final ShortererService shortererService;
+    final ShortenerService shortererService;
 
-    public ShortererController(ShortererService shortererService) {
+    public ShortererController(ShortenerService shortererService) {
         this.shortererService = shortererService;
     }
 

@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class ShortererService {
+public class ShortenerService {
 
     @Autowired
     LinkDataRepository linkDataRepository;
@@ -61,15 +61,15 @@ public class ShortererService {
     }
 
     /**
-     * Concat a specified number of characters (default value = {@link ShortererService#LINK_LENGTH})
-     * from the {@link ShortererService#alphabet}
+     * Concat a specified number of characters (default value = {@link ShortenerService#LINK_LENGTH})
+     * from the {@link ShortenerService#alphabet}
      *
      * @return String
      */
     private String getShort() {
         int length = LINK_LENGTH;
         boolean codeGen;
-        String newShort = "";
+        String newShort;
         int loopTries = 0;
 
         do {
@@ -91,7 +91,7 @@ public class ShortererService {
     }
 
     private boolean isValidLink(String link) {
-        return link.matches("[(http(s)?):\\/\\/(www\\.)?a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)");
+        return link.matches("[(http(s)?)://(www.)?a-zA-Z0-9@:%._+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_+.~#?&//=]*)");
     }
 
 }
