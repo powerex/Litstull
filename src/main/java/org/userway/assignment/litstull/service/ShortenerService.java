@@ -2,15 +2,16 @@ package org.userway.assignment.litstull.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.userway.assignment.litstull.data.domain.LinkData;
 import org.userway.assignment.litstull.data.repository.LinkDataRepository;
 import org.userway.assignment.litstull.model.ShortLinkResponseDto;
 import org.userway.assignment.litstull.service.exceptions.BadRequestLink;
-import org.userway.assignment.litstull.service.exceptions.NotFoundOriginException;
 import org.userway.assignment.litstull.service.exceptions.NotFoundShortException;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -21,6 +22,9 @@ public class ShortenerService {
 
     @Autowired
     LinkDataRepository linkDataRepository;
+
+    @Autowired
+    CacheManager cacheManager;
 
     // exclude same-looking characters 1 & l, O & 0
     private static final String alphabet = "ABCDEFGHIJKLNPQRSTVWXYZabcdefgijkmnopqrstvwxyz23456789";
@@ -54,10 +58,11 @@ public class ShortenerService {
         }
     }
 
+
     @Cacheable(value = "originslinks", key = "#shortLink")
-    public LinkData getOrigin(String shortLink) throws NotFoundOriginException {
-        Optional<LinkData> linkDataOptional = linkDataRepository.findByLink(shortLink);
-        return linkDataOptional.orElseThrow(NotFoundOriginException::new);
+    public String getOrigin(String shortLink) {
+        LinkData linkData = linkDataRepository.findByLink(shortLink).orElse(new LinkData("error", ""));
+        return linkData.getOrigin();
     }
 
     /**
@@ -92,6 +97,11 @@ public class ShortenerService {
 
     private boolean isValidLink(String link) {
         return link.matches("[(http(s)?)://(www.)?a-zA-Z0-9@:%._+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_+.~#?&//=]*)");
+    }
+
+    public void clearCache() {
+        Objects.requireNonNull(cacheManager.getCache("originslinks")).clear();
+        Objects.requireNonNull(cacheManager.getCache("shortslinks")).clear();
     }
 
 }

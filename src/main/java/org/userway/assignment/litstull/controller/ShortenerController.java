@@ -10,23 +10,23 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
-import org.userway.assignment.litstull.model.OriginLinkResponseDto;
+import org.springframework.web.servlet.ModelAndView;
 import org.userway.assignment.litstull.model.ShortLinkResponseDto;
 import org.userway.assignment.litstull.service.ShortenerService;
 import org.userway.assignment.litstull.service.exceptions.BadRequestLink;
-import org.userway.assignment.litstull.service.exceptions.NotFoundOriginException;
 import org.userway.assignment.litstull.service.exceptions.NotFoundShortException;
 
 @RestController
 @Slf4j
 @RequestMapping("listfull/v1")
-public class ShortererController {
+public class ShortenerController {
 
-    final ShortenerService shortererService;
+    final ShortenerService shortenerService;
 
-    public ShortererController(ShortenerService shortererService) {
-        this.shortererService = shortererService;
+    public ShortenerController(ShortenerService shortererService) {
+        this.shortenerService = shortererService;
     }
 
     @Operation(summary = "Returns short link")
@@ -41,12 +41,12 @@ public class ShortererController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ShortLinkResponseDto.class)))
     })
-    @GetMapping("/cut")
+    @PostMapping("/cut")
     public ResponseEntity<ShortLinkResponseDto> getShortUrl(@RequestParam String originUrl) {
         final HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         try {
-            ShortLinkResponseDto responseDto = shortererService.getShort(originUrl);
+            ShortLinkResponseDto responseDto = shortenerService.getShort(originUrl);
             return new ResponseEntity<>(
                     responseDto,
                     httpHeaders,
@@ -77,30 +77,20 @@ public class ShortererController {
                             schema = @Schema(implementation = ShortLinkResponseDto.class)))
     })
     @GetMapping("/restore")
-    public ResponseEntity<OriginLinkResponseDto> getOriginUrl(@RequestParam String shortLink) {
-        final HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+    public ModelAndView redirectWithUsingRedirectPrefix(ModelMap model, @RequestParam String shortLink) {
         log.info(String.format("Request for origin link by %s", shortLink));
-        try {
-            OriginLinkResponseDto origin =
-                    new OriginLinkResponseDto(shortererService.getOrigin(shortLink).getOrigin());
-            return new ResponseEntity<>(
-                    origin,
-                    httpHeaders,
-                    HttpStatus.OK
-            );
-        } catch (NotFoundOriginException exception) {
-            return new ResponseEntity<>(
-                    new OriginLinkResponseDto(""),
-                    httpHeaders,
-                    HttpStatus.NOT_FOUND
-            );
-        }
+        String originLink = "redirect:" + shortenerService.getOrigin(shortLink);
+        return new ModelAndView(originLink, model);
     }
 
     @DeleteMapping("/delete/{id}")
     public void delete(@PathVariable String id) {
-        shortererService.deleteById(id);
+        shortenerService.deleteById(id);
+    }
+
+    @PostMapping("/clear")
+    public void clearCache() {
+        shortenerService.clearCache();
     }
 
 }
