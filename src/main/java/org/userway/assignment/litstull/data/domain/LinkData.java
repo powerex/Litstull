@@ -4,7 +4,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -19,11 +18,7 @@ public class LinkData implements Serializable {
     String id;
 
     @CreatedDate
-    @Indexed(expireAfter = "7d")
     Date creationDate;
-
-    @Version
-    long version;
 
     String origin;
 
