@@ -25,10 +25,10 @@ The file [docker-compose.yaml](docker-compose.yml) contains all the necessary se
 After starting application the rest api application will be available at localhost:8080/listfull/v1
 
 ### Access
-Access localhost:8080/listfull/v1/cut?originUrl=
+Access localhost:8080/litstull/v1/cut?originUrl=
 use for get short link
 
-Access localhost:8080/listfull/v1/restore?shortLink=    use for restore full origin link
+Access localhost:8080/litstull/v1/restore?shortLink=    use for restore full origin link
 
 
 # Part 2 - What If

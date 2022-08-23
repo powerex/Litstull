@@ -20,7 +20,7 @@ import org.userway.assignment.litstull.service.exceptions.NotFoundShortException
 
 @RestController
 @Slf4j
-@RequestMapping("listfull/v1")
+@RequestMapping("litstull/v1")
 public class ShortenerController {
 
     final ShortenerService shortenerService;
