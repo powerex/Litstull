@@ -77,15 +77,10 @@ public class ShortenerController {
                             schema = @Schema(implementation = ShortLinkResponseDto.class)))
     })
     @GetMapping("/restore")
-    public ModelAndView redirectWithUsingRedirectPrefix(ModelMap model, @RequestParam String shortLink) {
+    public ModelAndView redirectToOrigin(ModelMap model, @RequestParam String shortLink) {
         log.info(String.format("Request for origin link by %s", shortLink));
         String originLink = "redirect:" + shortenerService.getOrigin(shortLink);
         return new ModelAndView(originLink, model);
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public void delete(@PathVariable String id) {
-        shortenerService.deleteById(id);
     }
 
     @PostMapping("/clear")

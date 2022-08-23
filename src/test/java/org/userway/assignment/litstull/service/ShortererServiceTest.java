@@ -4,13 +4,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.userway.assignment.litstull.data.domain.LinkData;
 import org.userway.assignment.litstull.data.repository.LinkDataRepository;
 import org.userway.assignment.litstull.service.exceptions.BadRequestLink;
-import org.userway.assignment.litstull.service.exceptions.NotFoundOriginException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class ShortererServiceTest {
@@ -20,30 +20,6 @@ class ShortererServiceTest {
     @Autowired
     LinkDataRepository linkDataRepository;
 
-//    @Test
-//    @DisplayName("Test Should Return Right LinkData")
-//    void getOrigin() throws NotFoundOriginException {
-//        linkDataRepository.save(new LinkData("origin", "short"));
-//
-//        assertEquals(
-//                "origin",
-//                shortenerService.getOrigin("short")
-//        );
-//
-//        linkDataRepository.deleteAll();
-//    }
-
-    @Test
-    @DisplayName("Test Should Throw NotFoundException")
-    void getOriginNotFound() {
-
-        NotFoundOriginException thrown = assertThrows(
-                NotFoundOriginException.class,
-                () -> shortenerService.getOrigin("https://google.com"),
-                "Expected getOrigin() to throw NotFoundOriginException");
-
-    }
-
     @Test
     @DisplayName("Test Should Throw Exception When Origin Link Not Valid")
     void testGetShortValid() {
@@ -52,4 +28,18 @@ class ShortererServiceTest {
                 () -> shortenerService.getShort("http://invalid"),
                 "Expected getShort() to throw BadRequestLink");
     }
+
+    private Method getIsValidLink() throws NoSuchMethodException {
+        Method method = ShortenerService.class.getDeclaredMethod("isValidLink", String.class);
+        method.setAccessible(true);
+        return method;
+    }
+
+    @Test
+    @DisplayName("Test Should Correct Validate Url Links")
+    void validLink() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        assertTrue((Boolean) getIsValidLink().invoke(shortenerService,"https://google.com"));
+        assertFalse((Boolean) getIsValidLink().invoke(shortenerService,"https://com"));
+    }
+
 }
